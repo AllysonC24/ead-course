@@ -7,6 +7,7 @@ import com.ead.course.services.ModuleService;
 import com.ead.course.specifications.SpecificationTemplate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 @RequiredArgsConstructor
 @RestController
 public class LessonController {
@@ -26,6 +28,7 @@ public class LessonController {
     @PostMapping("/modules/{moduleId}/lessons")
     public ResponseEntity<Object> saveLesson(@PathVariable(value = "moduleId") UUID moduleId,
                                              @RequestBody @Valid LessonRecordDTO lessonRecordDTO){
+        log.debug("POST saveLesson lessonRecordDTO received {}", lessonRecordDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(this.lessonService.save(this.moduleService.findById(moduleId).get(), lessonRecordDTO));
     }
 
@@ -46,14 +49,15 @@ public class LessonController {
     public ResponseEntity<Object> updateLesson(@PathVariable(value = "lessonId") UUID lessonId,
                                                @PathVariable(value = "moduleId") UUID moduleId,
                                                @RequestBody @Valid LessonRecordDTO lessonRecordDTO){
-
+        log.debug("PUT updateLesson lessonRecordDTO received {}", lessonRecordDTO);
         return ResponseEntity.status(HttpStatus.OK).body(this.lessonService.update(this.lessonService.findLessonIntoModule(lessonId, moduleId).get(), lessonRecordDTO));
     }
 
     @DeleteMapping("/modules/{moduleId}/lessons/{lessonId}")
     public ResponseEntity<Object> deleteLesson(@PathVariable(value = "lessonId") UUID lessonId,
                                                @PathVariable(value = "moduleId") UUID moduleId) {
-
+        log.debug("DELETE deleteLesson lessonId received {}", lessonId);
+        log.debug("DELETE deleteLesson moduleId received {}", moduleId);
         this.lessonService.delete(this.lessonService.findLessonIntoModule(lessonId, moduleId).get());
         return ResponseEntity.status(HttpStatus.OK).body("Lesson deleted successfully");
     }

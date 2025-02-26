@@ -7,6 +7,7 @@ import com.ead.course.services.ModuleService;
 import com.ead.course.specifications.SpecificationTemplate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 @RequiredArgsConstructor
 @RestController
 public class ModuleController {
@@ -25,6 +27,7 @@ public class ModuleController {
 
     @PostMapping("/courses/{courseId}/modules")
     public ResponseEntity<Object> saveModule(@PathVariable(value = "courseId") UUID courseId, @RequestBody @Valid ModuleRecordDTO moduleRecordDTO) {
+       log.debug("POST saveModule moduleRecordDTO received {}", moduleRecordDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(this.moduleService.save(this.courseService.findById(courseId).get(), moduleRecordDTO));
     }
 
@@ -38,7 +41,6 @@ public class ModuleController {
     @GetMapping("/courses/{courseId}/modules/{moduleId}")
     public ResponseEntity<Object> getOneModule(@PathVariable(value = "moduleId") UUID moduleId,
                                                @PathVariable(value = "courseId") UUID courseId) {
-
         return ResponseEntity.status(HttpStatus.OK).body(this.moduleService.findModuleIntoCourse(moduleId, courseId).get());
     }
 
@@ -46,7 +48,7 @@ public class ModuleController {
     public ResponseEntity<Object> updateModule(@PathVariable(value = "moduleId") UUID moduleId,
                                                @PathVariable(value = "courseId") UUID courseId,
                                                @RequestBody @Valid ModuleRecordDTO moduleRecordDTO) {
-
+        log.debug("PUT updateModule moduleRecordDTO received {}", moduleRecordDTO);
         return ResponseEntity.status(HttpStatus.OK).body(
                 this.moduleService.update(this.moduleService.findModuleIntoCourse(moduleId, courseId).get(), moduleRecordDTO));
     }
@@ -54,7 +56,8 @@ public class ModuleController {
     @DeleteMapping("/courses/{courseId}/modules/{moduleId}")
     public ResponseEntity<Object> deleteModule(@PathVariable(value = "moduleId") UUID moduleId,
                                                @PathVariable(value = "courseId") UUID courseId) {
-
+        log.debug("DELETE deleteModule moduleId received {}", moduleId);
+        log.debug("DELETE deleteModule courseId received {}", courseId);
         this.moduleService.delete(this.moduleService.findModuleIntoCourse(moduleId, courseId).get());
         return ResponseEntity.status(HttpStatus.OK).body("Module deleted successfully.");
     }
